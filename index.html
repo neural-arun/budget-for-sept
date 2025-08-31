@@ -9,6 +9,10 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .header-gradient {
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
         }
         .summary-card {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -24,23 +28,39 @@
             display: flex;
             align-items: center;
             padding: 0.75rem;
-            border-radius: 0.375rem;
-            background-color: #f9fafb;
+            border-radius: 0.5rem;
+            background-color: #f8fafc;
             margin-bottom: 0.5rem;
             transition: background-color 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .expense-item:hover {
+            background-color: #f1f5f9;
         }
         .expense-item input[type="checkbox"] {
             width: 1.25rem;
             height: 1.25rem;
             margin-right: 0.75rem;
             cursor: pointer;
+            accent-color: #4f46e5;
         }
         .expense-item.paid {
-             background-color: #e0f2fe; /* light blue */
+             background-color: #eef2ff; 
+             border-color: #a5b4fc;
         }
          .expense-item.paid label {
             text-decoration: line-through;
-            color: #6b7280;
+            color: #64748b;
+        }
+        .daily-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .daily-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1);
+        }
+        .main-title {
+            color: #4338ca;
         }
     </style>
 </head>
@@ -48,37 +68,37 @@
 
     <div class="container mx-auto p-4 md:p-8 max-w-7xl">
         <!-- Header -->
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-indigo-600">Arun & Sarita's Budget</h1>
-            <p class="text-lg text-gray-500">September 2025</p>
+        <header class="text-center mb-8 bg-white p-6 rounded-xl shadow-lg header-gradient">
+            <h1 class="text-4xl font-bold text-white">Arun & Sarita's Budget</h1>
+            <p class="text-lg text-indigo-200 mt-1">September 2025</p>
         </header>
 
         <!-- Summary Section -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="summary-card bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
+            <div class="summary-card bg-white p-6 rounded-xl shadow-md border-l-4 border-green-400">
                 <h2 class="text-lg font-semibold text-gray-500">Total Income</h2>
-                <p class="text-3xl font-bold text-green-600">₹10,000.00</p>
+                <p class="text-3xl font-bold text-green-500">₹10,000.00</p>
             </div>
-            <div id="total-expenses-card" class="summary-card bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
+            <div id="total-expenses-card" class="summary-card bg-white p-6 rounded-xl shadow-md border-l-4 border-red-400">
                 <h2 class="text-lg font-semibold text-gray-500">Logged Expenses</h2>
-                <p id="total-expenses" class="text-3xl font-bold text-red-600">₹0.00</p>
+                <p id="total-expenses" class="text-3xl font-bold text-red-500">₹0.00</p>
             </div>
-            <div id="remaining-balance-card" class="summary-card bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+            <div id="remaining-balance-card" class="summary-card bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-400">
                 <h2 class="text-lg font-semibold text-gray-500">Remaining Balance</h2>
-                <p id="remaining-balance" class="text-3xl font-bold text-blue-600">₹10,000.00</p>
+                <p id="remaining-balance" class="text-3xl font-bold text-blue-500">₹10,000.00</p>
             </div>
         </div>
 
         <!-- Expense Categories Section -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <div id="housing-expenses" class="bg-white p-6 rounded-lg shadow-md"></div>
-            <div id="utilities-expenses" class="bg-white p-6 rounded-lg shadow-md"></div>
-            <div id="personal-expenses" class="bg-white p-6 rounded-lg shadow-md"></div>
+            <div id="housing-expenses" class="bg-white p-6 rounded-xl shadow-md"></div>
+            <div id="utilities-expenses" class="bg-white p-6 rounded-xl shadow-md"></div>
+            <div id="personal-expenses" class="bg-white p-6 rounded-xl shadow-md"></div>
         </div>
 
         <!-- Daily Tracker Section -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-bold mb-4 text-indigo-600">Daily & Miscellaneous Expenses</h2>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-2xl font-bold mb-4 main-title">Daily & Miscellaneous Expenses</h2>
             <div id="daily-tracker" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <!-- Daily cards will be populated by JavaScript -->
             </div>
@@ -118,7 +138,6 @@
             let budgetData = {
                 paidFixedExpenses: [],
                 loggedDailyAmounts: {}, // e.g., { '2025-09-01': 75 }
-                miscExpenses: {},
                 notes: {}
             };
 
@@ -173,13 +192,13 @@
                                            onchange="toggleFixedExpense('${escapedName}')" ${isPaid ? 'checked' : ''}>
                                     <label for="expense-${item.name.replace(/\s+/g, '-')}" class="flex justify-between w-full cursor-pointer">
                                         <span class="font-medium">${item.name}</span>
-                                        <span class="font-semibold text-indigo-500">₹${item.amount.toFixed(2)}</span>
+                                        <span class="font-semibold text-gray-700">₹${item.amount.toFixed(2)}</span>
                                     </label>
                                 </div>`;
                         }).join('');
 
                         container.innerHTML = `
-                            <h2 class="text-2xl font-bold mb-4 text-indigo-600">${category}</h2>
+                            <h2 class="text-2xl font-bold mb-4 main-title">${category}</h2>
                             ${itemsHTML}
                         `;
                     }
@@ -187,6 +206,20 @@
             }
 
             function renderDailyTracker() {
+                const dayColors = [
+                    { border: 'border-indigo-400', bg: 'bg-indigo-50' }, // Sunday
+                    { border: 'border-sky-400', bg: 'bg-sky-50' }, // Monday
+                    { border: 'border-teal-400', bg: 'bg-teal-50' }, // Tuesday
+                    { border: 'border-emerald-400', bg: 'bg-emerald-50' }, // Wednesday
+                    { border: 'border-violet-400', bg: 'bg-violet-50' }, // Thursday
+                    { border: 'border-fuchsia-400', bg: 'bg-fuchsia-50' }, // Friday
+                    { border: 'border-rose-400', bg: 'bg-rose-50' } // Saturday
+                ];
+
+                const hindiQuotes = [
+                    "मेहनत इतनी खामोशी से करो कि सफलता शोर मचा दे।", "बचत एक अच्छी आदत है, इसे अपनाएं।", "आज का निवेश, कल का सुख।", "कड़ी मेहनत का कोई विकल्प नहीं है।", "अपने खर्चों को नियंत्रित करें, भविष्य को नहीं।", "सपने वो नहीं जो आप नींद में देखते हैं, सपने वो हैं जो आपको सोने नहीं देते।", "पैसा पेड़ पर नहीं उगता।", "सफलता का रास्ता मेहनत से होकर जाता है।", "छोटी-छोटी बचतें बड़ी संपत्ति बनाती हैं।", "जो आज मेहनत करेगा, वो कल राज करेगा।", "एक रुपया बचाया मतलब एक रुपया कमाया।", "आलस सफलता का सबसे बड़ा दुश्मन है।", "वित्तीय योजना बनाना सफलता की पहली सीढ़ी है।", "परिश्रम ही सौभाग्य की जननी है।", "अपने पैसों के मालिक बनें, गुलाम नहीं।", "जब तक आप रुकते नहीं, तब तक कोई फर्क नहीं पड़ता कि आप कितना धीमे चल रहे हैं।", "कर्ज से बचें, यह भविष्य की कमाई चुराता है।", "सफलता के लिए जुनून बहुत ज़रूरी है।", "बजट बनाना आपके पैसे को दिशा देता है।", "हमेशा सीखते रहो, कमाई बढ़ती रहेगी।", "फिजूलखर्ची से गरीबी आती है।", "अवसर सूर्योदय की तरह होते हैं, देर करने पर चले जाते हैं।", "अपनी आय के भीतर जीना सीखें।", "अनुशासन ही लक्ष्य और उपलब्धि के बीच का पुल है।", "हर दिन थोड़ा-थोड़ा बचाएं।", "जीतने वाले कोई अलग काम नहीं करते, वे हर काम को अलग ढंग से करते हैं।", "निवेश ज्ञान में सर्वोत्तम ब्याज देता है।", "आपकी मेहनत आपको कभी निराश नहीं करेगी।", "पैसे का सही इस्तेमाल ही असली अमीरी है।", "गिरकर उठना और फिर से प्रयास करना ही असली जीत है।"
+                ];
+
                 dailyTrackerContainer.innerHTML = '';
                 const daysInMonth = new Date(YEAR, MONTH + 1, 0).getDate();
                 
@@ -194,28 +227,18 @@
                     const date = new Date(YEAR, MONTH, day);
                     const dateString = date.toISOString().split('T')[0];
                     const dayOfWeek = date.toLocaleDateString('en-IN', { weekday: 'short' });
+                    const dayOfWeekIndex = date.getDay();
+                    const dayColor = dayColors[dayOfWeekIndex];
+                    const quote = hindiQuotes[day - 1] || "सकारात्मक रहें।";
 
                     const card = document.createElement('div');
-                    card.className = `p-4 rounded-lg shadow border-t-4 flex flex-col ${dayOfWeek === 'Sun' ? 'bg-indigo-50 border-indigo-400' : 'bg-white border-gray-300'}`;
-                    
-                    let miscItemsHTML = '';
-                    if (budgetData.miscExpenses[dateString]) {
-                        miscItemsHTML = Object.entries(budgetData.miscExpenses[dateString]).map(([name, amount]) => `
-                            <div class="flex justify-between items-center text-sm mt-1 misc-item">
-                                <span class="text-gray-600">${name}</span>
-                                <div>
-                                    <span class="font-medium">₹${parseFloat(amount).toFixed(2)}</span>
-                                    <button class="text-red-500 hover:text-red-700 ml-2 text-xs" onclick="removeMiscItem('${dateString}', '${name}')">✖</button>
-                                </div>
-                            </div>
-                        `).join('');
-                    }
+                    card.className = `daily-card p-4 rounded-lg shadow border-t-4 flex flex-col ${dayColor.bg} ${dayColor.border}`;
                     
                     const loggedDailyValue = budgetData.loggedDailyAmounts[dateString] || '';
                     const dailyLogItem = `
-                        <div class="bg-gray-50 p-2 rounded-md">
+                        <div class="bg-white/70 p-2 rounded-md">
                             <p class="text-sm font-semibold text-center text-gray-600">Daily Essentials</p>
-                            <p class="text-xs text-center text-gray-500 mb-2">Please keep under this expense: ₹${config.dailyGuideline}</p>
+                            <p class="text-xs text-center text-gray-500 mb-2">Guideline: ₹${config.dailyGuideline}</p>
                             <div class="flex items-center space-x-2">
                                 <input type="number" placeholder="Amt" id="daily-amt-${dateString}" class="w-full text-sm p-1 border rounded" value="${loggedDailyValue}">
                                 <button class="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600" onclick="logDailyAmount('${dateString}')">Log</button>
@@ -233,15 +256,11 @@
                             </div>
                             <div class="space-y-3">
                                 ${dailyLogItem}
-                                <hr class="my-2">
-                                <p class="text-sm font-semibold text-center text-gray-600">Miscellaneous</p>
-                                <div id="misc-${dateString}">
-                                    ${miscItemsHTML}
-                                </div>
                             </div>
                         </div>
                         <div class="mt-auto pt-3">
-                             <textarea class="w-full text-sm p-1.5 border rounded h-20 bg-gray-50" placeholder="add items you bought today" onchange="saveNote('${dateString}', this.value)">${note}</textarea>
+                            <p class="text-xs text-center text-gray-500 mb-2 italic">"${quote}"</p>
+                             <textarea class="w-full text-sm p-1.5 border rounded h-20 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="Add items you bought today..." onchange="saveNote('${dateString}', this.value)">${note}</textarea>
                         </div>
                     `;
                     dailyTrackerContainer.appendChild(card);
@@ -256,13 +275,19 @@
                 remainingBalanceEl.textContent = `₹${remaining.toFixed(2)}`;
 
                 const remainingCard = document.getElementById('remaining-balance-card');
-                remainingCard.classList.remove('border-blue-500', 'border-yellow-500', 'border-red-500');
+                remainingCard.classList.remove('border-blue-400', 'border-yellow-400', 'border-red-400');
+                const pEl = remainingCard.querySelector('p');
+                pEl.classList.remove('text-blue-500', 'text-yellow-500', 'text-red-500');
+
                 if (remaining >= config.totalIncome * 0.25) {
-                    remainingCard.classList.add('border-blue-500');
+                    remainingCard.classList.add('border-blue-400');
+                    pEl.classList.add('text-blue-500');
                 } else if (remaining >= 0) {
-                     remainingCard.classList.add('border-yellow-500');
+                     remainingCard.classList.add('border-yellow-400');
+                     pEl.classList.add('text-yellow-500');
                 } else {
-                     remainingCard.classList.add('border-red-500');
+                     remainingCard.classList.add('border-red-400');
+                     pEl.classList.add('text-red-500');
                 }
             }
 
