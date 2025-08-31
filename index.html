@@ -156,12 +156,6 @@
                     total += parseFloat(budgetData.loggedDailyAmounts[date]) || 0;
                 }
                 
-                // Add miscellaneous expenses
-                for (const date in budgetData.miscExpenses) {
-                    for (const item in budgetData.miscExpenses[date]) {
-                        total += parseFloat(budgetData.miscExpenses[date][item]) || 0;
-                    }
-                }
                 return total;
             }
 
@@ -172,10 +166,11 @@
                     if (container) {
                         let itemsHTML = config.expenseCategories[category].map(item => {
                             const isPaid = budgetData.paidFixedExpenses.includes(item.name);
+                            const escapedName = item.name.replace(/'/g, "\\'");
                             return `
                                 <div class="expense-item ${isPaid ? 'paid' : ''}">
                                     <input type="checkbox" id="expense-${item.name.replace(/\s+/g, '-')}" 
-                                           onchange="toggleFixedExpense('${item.name}')" ${isPaid ? 'checked' : ''}>
+                                           onchange="toggleFixedExpense('${escapedName}')" ${isPaid ? 'checked' : ''}>
                                     <label for="expense-${item.name.replace(/\s+/g, '-')}" class="flex justify-between w-full cursor-pointer">
                                         <span class="font-medium">${item.name}</span>
                                         <span class="font-semibold text-indigo-500">₹${item.amount.toFixed(2)}</span>
@@ -298,39 +293,6 @@
                 }
             };
             
-            window.addMiscItem = (dateString) => {
-                const nameInput = document.getElementById(`name-${dateString}`);
-                const amountInput = document.getElementById(`amount-${dateString}`);
-                const name = nameInput.value.trim();
-                const amount = parseFloat(amountInput.value);
-
-                if (name && amount > 0) {
-                    if (!budgetData.miscExpenses[dateString]) {
-                        budgetData.miscExpenses[dateString] = {};
-                    }
-                    budgetData.miscExpenses[dateString][name] = amount;
-                    nameInput.value = '';
-                    amountInput.value = '';
-                    saveData();
-                    renderDailyTracker(); 
-                    updateSummary();
-                } else {
-                    alert("Please enter a valid item name and amount.");
-                }
-            };
-
-            window.removeMiscItem = (dateString, name) => {
-                 if (budgetData.miscExpenses[dateString] && budgetData.miscExpenses[dateString][name]) {
-                    delete budgetData.miscExpenses[dateString][name];
-                    if (Object.keys(budgetData.miscExpenses[dateString]).length === 0) {
-                        delete budgetData.miscExpenses[dateString];
-                    }
-                    saveData();
-                    renderDailyTracker();
-                    updateSummary();
-                 }
-            };
-
             window.saveNote = (dateString, text) => {
                 budgetData.notes[dateString] = text.trim();
                 saveData();
